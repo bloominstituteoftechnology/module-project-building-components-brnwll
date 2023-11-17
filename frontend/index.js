@@ -2,13 +2,10 @@ function moduleProject3() {
 
   // 👉 TASK 1 - Write a `buildNav` component that returns a nav
   function buildNav(links) {
-    console.log(links)
     const nav = document.createElement('nav')
     links.map(link => {
-      const a = document.createElement('a')
-      a.href = link.href
+      const a = linkBuilder(link.href, link.textContent)
       a.title = link.title
-      a.textContent = link.textContent
       nav.appendChild(a)
     })
     return nav
@@ -27,6 +24,26 @@ function moduleProject3() {
 
   function buildLearnerCard(learner, languages) {
     //  ✨ do your magic here
+    const learnerCard = document.createElement('div')
+    learnerCard.classList.add('learner-card')
+    let { fullName, id, dateOfBirth, favLanguage } = learner
+    dateOfBirth = `Date of Birth: ${dateOfBirth}`
+    favLanguage = `Favorite Language: ${languages.find(l => l.id === favLanguage).name}`
+    id = `Learner ID: ${id}`
+    Array(fullName, id, dateOfBirth, favLanguage).forEach(text => {
+      const p = document.createElement('p')
+      p.textContent = text
+      learnerCard.appendChild(p)
+    })
+    learnerCard.addEventListener('click', (e) => {
+      if (!e.currentTarget.classList.contains('active')) {
+        const allLearnerCards = Array.from(e.currentTarget.parentElement.children)
+        allLearnerCards.forEach(card => card.classList.remove('active'))
+        e.currentTarget.classList.add('active')
+      }
+      e.stopPropagation()
+    })
+    return learnerCard
   }
 
   {
@@ -47,13 +64,60 @@ function moduleProject3() {
       { id: 17, fullName: 'Daniel Castillo', dateOfBirth: '1995-11-05', favLanguage: 12 }
     ]
     //  ✨ do your magic here
+    const learnerCardSection = document.querySelector('section')
+    learners.map(learner => {
+      learnerCardSection.appendChild(buildLearnerCard(learner, languages))
+    })
   }
 
   // 👉 TASK 3 - Write a `buildFooter` component that returns a footer
 
   function buildFooter(footerData) {
     //  ✨ do your magic here
-    return document.createElement('footer')
+    const footer = document.createElement('footer')
+    footer.appendChild(buildFooterCompanyInfo(footerData))
+    footer.appendChild(buildFooterSocialMediaLinks(footerData))
+    const bloomtech = document.createElement('div')
+    bloomtech.textContent = '© BLOOM INSTITUTE OF TECHNOLOGY 2023'
+    footer.appendChild(bloomtech)
+    return footer
+  }
+
+  function buildFooterCompanyInfo(footerData) {
+    const { companyName, address, contactEmail } = footerData
+    const container = document.createElement('div')
+    container.className = 'company-info'
+    container.appendChild(pBuilder(companyName, 'company-name'))
+    container.appendChild(pBuilder(address, 'address'))
+    container.appendChild(pBuilder('Email: ', contactEmail, linkBuilder(`mailto:${contactEmail}`, contactEmail)))
+    return container
+  }
+
+  function buildFooterSocialMediaLinks(footerData) {
+    const { twitter, facebook, instagram } = footerData.socialMedia
+    const container = document.createElement('div')
+    container.className = 'social-media'
+    container.appendChild(linkBuilder(twitter, 'Twitter'))
+    container.appendChild(linkBuilder(facebook, 'Facebook'))
+    container.appendChild(linkBuilder(instagram, 'Instagram'))
+    return container
+  }
+
+  function pBuilder(text, className, child) {
+    const p = document.createElement('p')
+    p.textContent = text
+    p.className = className
+    if (child) {
+      p.appendChild(child)
+    }
+    return p
+  }
+
+  function linkBuilder(url, text) {
+    const a = document.createElement('a')
+    a.href = url
+    a.textContent = text
+    return a
   }
 
   // ❗ DOM creation using your `buildFooter` component (do not change):
@@ -69,8 +133,10 @@ function moduleProject3() {
   }))
 
   // 👉 TASK 4 - Clicking on the section should deactivate the active card
-
   //  ✨ do your magic here
+  document.querySelector('section').addEventListener('click', (e) => {
+    Array.from(e.currentTarget.children).forEach(child => child.classList.remove('active'))
+  })
 }
 
 // ❗ DO NOT CHANGE THIS CODE
